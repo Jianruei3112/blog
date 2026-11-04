@@ -1,10 +1,13 @@
-updated: 2026-11-04
-changed: no
+updated: 2026-11-05
+changed: yes
 backup_branch: main
 
-這是預留檔，不是實際備份。有變更的那天由 Lumi（幕僚長）改寫。
+由 Lumi（幕僚長）於 2026-11-05 07:00 Asia/Taipei 的 daily-backup 改寫。
 
 bots:
+- name: Lumi
+  file: backup/main-bot.md
+  state: present
 - name: Levi
   file: backup/levi.md
   state: missing
