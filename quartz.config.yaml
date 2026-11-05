@@ -204,6 +204,7 @@ plugins:
       priority: 5
       condition: not-index
   - source: "@quartz-community/comments"
+    XXXMARKER
     enabled: true
     options:
       provider: giscus
