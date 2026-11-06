@@ -17,6 +17,9 @@ export const NotFoundPageType: QuartzPageTypePlugin = () => ({
       text: notFound,
       description: notFound,
       frontmatter: { title: notFound, tags: [] },
+      // Recent notes, search, folder and tag listings skip unlisted pages.
+      // The HTML error page is still emitted; it is not an article.
+      unlisted: true,
     })
 
     return [
