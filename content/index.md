@@ -1,6 +1,7 @@
 ---
-title: Welcome to Quartz
+title: 簡睿的日常筆記
 ---
 
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
+把讀過的故事、關心的科技，以及生活裡值得停留的片刻，慢慢記下來。
+這裡有閱讀心得、AI 與數位世界的觀察，也有還在整理中的想法。
+歡迎隨意翻閱。
