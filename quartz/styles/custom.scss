@@ -209,7 +209,6 @@
     width: 100%;
   }
 
-  #quartz-body .graph,
   #quartz-body .backlinks {
     order: 3;
     width: 100%;
@@ -220,12 +219,6 @@
     box-sizing: border-box;
   }
 
-  #quartz-body .graph canvas,
-  #quartz-body .graph-container,
-  #quartz-body .graph-outer {
-    max-width: 100%;
-  }
-
   .page > #quartz-body > footer {
     order: 4;
     width: 100%;
@@ -233,5 +226,25 @@
     margin: 0 auto;
     padding: 0 1.15rem 2rem;
     box-sizing: border-box;
+  }
+}
+
+// Graph View is disabled. An empty right rail would keep a 320px column.
+.sidebar.right:empty {
+  display: none;
+}
+
+@media all and ($desktop) {
+  .page > #quartz-body:has(> .sidebar.right:empty) {
+    grid-template-columns: #{$sidePanelWidth} minmax(0, 1fr);
+    grid-template-areas:
+      "grid-sidebar-left grid-header"
+      "grid-sidebar-left grid-center"
+      "grid-sidebar-left grid-footer";
+  }
+
+  .page > #quartz-body:has(> .sidebar.right:empty) > .center {
+    max-width: 42rem;
+    min-width: 0;
   }
 }
