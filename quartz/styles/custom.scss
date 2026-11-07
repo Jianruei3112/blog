@@ -1,3 +1,237 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// Mobile reading layout.
+// Phones (and widths under the 800px mobile breakpoint) were stacking the
+// left sidebar above the article. Recent Notes sat in that horizontal bar and
+// shrunk to a few characters wide, so Chinese titles wrapped one glyph per
+// line and pushed the article title past the first screen.
+// Desktop and tablet (min-width: 801px) keep the existing columns.
+
+@media all and ($mobile) {
+  html {
+    width: auto;
+    overflow-x: clip;
+  }
+
+  .page > #quartz-body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    row-gap: 0;
+  }
+
+  .page > #quartz-body > .sidebar.left {
+    order: 0;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.15rem !important;
+    width: 100%;
+    height: auto !important;
+    min-height: 3rem;
+    margin: 0;
+    padding: 0.2rem 0.65rem !important;
+    box-sizing: border-box;
+    background-color: var(--light);
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  // The article list stays in the explorer menu, not above the text.
+  .page > #quartz-body > .sidebar.left > .recent-notes,
+  .page > #quartz-body > .sidebar.left > .spacer,
+  .page > #quartz-body > .sidebar.left > .mobile-only {
+    display: none !important;
+  }
+
+  .page > #quartz-body > .sidebar.left > .page-title {
+    flex: 1 1 7rem;
+    min-width: 7rem;
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .page > #quartz-body > .sidebar.left > .page-title a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .page > #quartz-body > .sidebar.left > .flex-component {
+    flex: 0 0 auto !important;
+    width: auto;
+    min-width: 0;
+    gap: 0.1rem !important;
+  }
+
+  .page > #quartz-body > .sidebar.left .flex-component > div {
+    flex-grow: 0 !important;
+    flex-shrink: 0;
+  }
+
+  #quartz-body .search {
+    min-width: 0;
+    max-width: none;
+    flex-grow: 0;
+  }
+
+  #quartz-body .search > .search-button {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    justify-content: center;
+    border-radius: 999px;
+  }
+
+  #quartz-body .search > .search-button > p {
+    display: none;
+  }
+
+  #quartz-body .search > .search-button svg {
+    margin: 0;
+  }
+
+  #quartz-body .darkmode,
+  #quartz-body .readermode,
+  #quartz-body button.mobile-explorer {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0;
+  }
+
+  // Reader mode hides the whole sidebar, including the controls that exit it.
+  // Keep the thin bar usable; the article is already the full column.
+  :root[reader-mode="on"] #quartz-body > .sidebar.left {
+    opacity: 1;
+  }
+
+  .page > #quartz-body > .center {
+    order: 2;
+    width: 100%;
+    max-width: 40rem;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 0.35rem 1.15rem 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .page > #quartz-body .page-header {
+    margin-top: 0.35rem;
+  }
+
+  .page > #quartz-body .page-header h1 {
+    font-size: clamp(1.4rem, 4.8vw, 1.7rem);
+    line-height: 1.35;
+    margin: 0.15rem 0 0.45rem;
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+  }
+
+  .page > #quartz-body article p,
+  .page > #quartz-body article li {
+    font-size: 1.075rem;
+    line-height: 1.85;
+    margin-top: 0;
+    margin-bottom: 1.05rem;
+  }
+
+  .page > #quartz-body article img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 1.25rem auto;
+    content-visibility: visible;
+  }
+
+  .page > #quartz-body pre,
+  .page > #quartz-body .table-container,
+  .page > #quartz-body .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  // Explorer opens as a full-screen sheet without using 100vw (that overflows).
+  #quartz-body .explorer .explorer-content {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 4.25rem 1.15rem 2rem;
+    box-sizing: border-box;
+  }
+
+  #quartz-body .explorer-content a,
+  #quartz-body .explorer-content .folder-container div > a,
+  #quartz-body .explorer-content .folder-container div > button span {
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  // Right column follows the article. TOC stays one line until opened.
+  .page > #quartz-body > .sidebar.right {
+    display: contents;
+  }
+
+  #quartz-body .toc {
+    order: 1;
+    width: 100%;
+    max-width: 40rem;
+    margin: 0.35rem auto 0;
+    padding: 0 1.15rem;
+    box-sizing: border-box;
+    display: flex !important;
+  }
+
+  #quartz-body .toc:has(> .toc-header.collapsed) {
+    max-height: 2.75rem;
+    overflow: hidden;
+  }
+
+  #quartz-body .toc:has(> .toc-header:not(.collapsed)) {
+    max-height: min(50vh, 22rem);
+    overflow: auto;
+  }
+
+  #quartz-body .toc .toc-header {
+    min-height: 2.75rem;
+    width: 100%;
+  }
+
+  #quartz-body .graph,
+  #quartz-body .backlinks {
+    order: 3;
+    width: 100%;
+    max-width: 40rem;
+    min-width: 0;
+    margin: 0.5rem auto;
+    padding: 0 1.15rem;
+    box-sizing: border-box;
+  }
+
+  #quartz-body .graph canvas,
+  #quartz-body .graph-container,
+  #quartz-body .graph-outer {
+    max-width: 100%;
+  }
+
+  .page > #quartz-body > footer {
+    order: 4;
+    width: 100%;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 0 1.15rem 2rem;
+    box-sizing: border-box;
+  }
+}
