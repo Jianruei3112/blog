@@ -4,6 +4,7 @@ import { QuartzEmitterPlugin } from "../types"
 
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
+import mobileReadingScript from "../../components/scripts/mobileReading.inline"
 // @ts-ignore
 import popoverScript from "../../components/scripts/popover.inline"
 import baseStyles from "../../styles/base.scss"
@@ -257,6 +258,8 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
       document.head.appendChild(rybbitScript);
     `)
   }
+
+  componentResources.afterDOMLoaded.push(mobileReadingScript)
 
   if (cfg.enableSPA) {
     componentResources.afterDOMLoaded.push(spaRouterScript)
