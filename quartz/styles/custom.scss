@@ -1,165 +1,266 @@
 @use "./variables.scss" as *;
 
-// Mobile reading layout.
-// Phones (and widths under the 800px mobile breakpoint) were stacking the
-// left sidebar above the article. Recent Notes sat in that horizontal bar and
-// shrunk to a few characters wide, so Chinese titles wrapped one glyph per
-// line and pushed the article title past the first screen.
-// Desktop and tablet (min-width: 801px) keep the existing columns.
+// Editorial reading layout for Traditional Chinese.
+// Colors and font files come from quartz.config.yaml. This file sets measure,
+// hierarchy, and the small-screen masthead. Component CSS loads later and is
+// unlayered, so overrides use a slightly deeper selector.
+//
+// The graph plugin stays off. An empty right rail must not keep a 320px column.
+// On phones, reader mode must leave the masthead visible so it can be turned off.
 
-@media all and ($mobile) {
-  html {
-    width: auto;
-    overflow-x: clip;
-  }
+:root {
+  --serif-stack: "Noto Serif TC", "Songti TC", "PMingLiU", "Source Han Serif TC", serif;
+  --sans-stack: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", sans-serif;
+  --titleFont: var(--serif-stack);
+  --headerFont: var(--serif-stack);
+  --bodyFont: var(--serif-stack);
+  --font-text: var(--serif-stack);
+  --font-interface: var(--sans-stack);
+  --codeFont: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-monospace: var(--codeFont);
+}
 
+html {
+  width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  overflow-x: clip;
+  font-family: var(--serif-stack);
+  background-color: var(--light);
+  color: var(--darkgray);
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--secondary) 28%, var(--light));
+  color: var(--dark);
+}
+
+.page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.25rem 3.5rem;
+}
+
+.page > #quartz-body {
+  padding: 0;
+  row-gap: 0;
+  column-gap: 0;
+}
+
+.page > #quartz-body .center,
+.page > #quartz-body footer,
+.page > #quartz-body .page-header,
+.page > #quartz-body article {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page h4,
+.page h5,
+.page h6 {
+  font-family: var(--serif-stack);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+.sidebar {
+  font-family: var(--sans-stack);
+}
+
+// Below desktop, sidebars stack and the left rail becomes one sticky row.
+@media all and (max-width: 1199px) {
   .page > #quartz-body {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
-    row-gap: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto;
+    grid-template-areas:
+      "grid-sidebar-left"
+      "grid-header"
+      "grid-center"
+      "grid-sidebar-right"
+      "grid-footer";
   }
 
-  .page > #quartz-body > .sidebar.left {
-    order: 0;
+  .page > #quartz-body .sidebar.left {
     position: sticky;
     top: 0;
     z-index: 40;
-    display: flex !important;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.15rem !important;
+    height: auto;
     width: 100%;
-    height: auto !important;
-    min-height: 3rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.15rem;
     margin: 0;
-    padding: 0.2rem 0.65rem !important;
-    box-sizing: border-box;
-    background-color: var(--light);
+    padding: 0.2rem 0;
+    background: var(--light);
     border-bottom: 1px solid var(--lightgray);
   }
 
-  // The article list stays in the explorer menu, not above the text.
-  .page > #quartz-body > .sidebar.left > .recent-notes,
-  .page > #quartz-body > .sidebar.left > .spacer,
-  .page > #quartz-body > .sidebar.left > .mobile-only {
-    display: none !important;
+  .page > #quartz-body .page-header {
+    margin-top: 1.85rem;
   }
 
-  .page > #quartz-body > .sidebar.left > .page-title {
-    flex: 1 1 7rem;
-    min-width: 7rem;
-    margin: 0;
-    font-size: 1.05rem;
-    line-height: 1.2;
+  .page > #quartz-body .sidebar.right {
+    position: static;
+    height: auto;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.75rem;
+    padding: 0.5rem 0 0;
   }
 
-  .page > #quartz-body > .sidebar.left > .page-title a {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .page > #quartz-body .sidebar.right > * {
+    flex: none;
+    width: 100%;
+    max-height: none;
   }
 
-  .page > #quartz-body > .sidebar.left > .flex-component {
-    flex: 0 0 auto !important;
-    width: auto;
-    min-width: 0;
-    gap: 0.1rem !important;
+  .page > #quartz-body .sidebar.right > .toc {
+    display: flex;
   }
 
-  .page > #quartz-body > .sidebar.left .flex-component > div {
-    flex-grow: 0 !important;
-    flex-shrink: 0;
-  }
-
-  #quartz-body .search {
-    min-width: 0;
-    max-width: none;
-    flex-grow: 0;
-  }
-
-  #quartz-body .search > .search-button {
-    width: 2.75rem;
-    height: 2.75rem;
-    padding: 0;
-    justify-content: center;
-    border-radius: 999px;
-  }
-
-  #quartz-body .search > .search-button > p {
-    display: none;
-  }
-
-  #quartz-body .search > .search-button svg {
-    margin: 0;
-  }
-
-  #quartz-body .darkmode,
-  #quartz-body .readermode,
-  #quartz-body button.mobile-explorer {
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 2.75rem;
-    padding: 0;
-  }
-
-  // Reader mode hides the whole sidebar, including the controls that exit it.
-  // Keep the thin bar usable; the article is already the full column.
-  :root[reader-mode="on"] #quartz-body > .sidebar.left {
+  // Reader mode fades every sidebar, including the control that exits it.
+  :root[reader-mode="on"] .page > #quartz-body > .sidebar.left {
     opacity: 1;
   }
+}
 
-  .page > #quartz-body > .center {
-    order: 2;
-    width: 100%;
-    max-width: 40rem;
-    min-width: 0;
-    margin: 0 auto;
-    padding: 0.35rem 1.15rem 1.5rem;
-    box-sizing: border-box;
+@media all and ($desktop) {
+  .page > #quartz-body {
+    grid-template-columns: 13rem minmax(0, 36rem) 14.5rem;
+    grid-template-areas:
+      "grid-sidebar-left grid-header grid-sidebar-right"
+      "grid-sidebar-left grid-center grid-sidebar-right"
+      "grid-footer grid-footer grid-footer";
+    column-gap: 2.5rem;
+    justify-content: center;
+  }
+
+  .page > #quartz-body:has(> .sidebar.right:empty) {
+    grid-template-columns: 13rem minmax(0, 36rem);
+    grid-template-areas:
+      "grid-sidebar-left grid-header"
+      "grid-sidebar-left grid-center"
+      "grid-footer grid-footer";
+  }
+
+  .page > #quartz-body .sidebar {
+    height: auto;
+    max-height: 100vh;
+    padding: 2.75rem 0 2rem;
+    overflow: auto;
+  }
+
+  .page > #quartz-body .sidebar.left {
+    gap: 1.35rem;
   }
 
   .page > #quartz-body .page-header {
-    margin-top: 0.35rem;
+    margin-top: 3.25rem;
+  }
+}
+
+.sidebar.right:empty {
+  display: none;
+}
+
+h2.page-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--serif-stack);
+  font-size: 1.45rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+h2.page-title a {
+  color: var(--dark);
+  font-weight: 500;
+  text-decoration: none;
+  background: transparent;
+}
+
+@media all and ($desktop) {
+  h2.page-title {
+    flex: none;
+    font-size: 1.7rem;
+    letter-spacing: 0.12em;
+  }
+}
+
+.sidebar .search > .search-button {
+  min-height: 44px;
+  height: 44px;
+  border-radius: 0;
+  border-color: var(--lightgray);
+  background: transparent;
+  color: var(--gray);
+  font-family: var(--sans-stack);
+}
+
+.sidebar .darkmode,
+.sidebar .readermode {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.sidebar .explorer .mobile-explorer,
+.sidebar .explorer .desktop-explorer {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.35rem;
+  border-radius: 0;
+}
+
+@media all and ($mobile) {
+  .sidebar .search {
+    flex: 0 0 auto;
+    max-width: none;
+    min-width: 0;
   }
 
-  .page > #quartz-body .page-header h1 {
-    font-size: clamp(1.4rem, 4.8vw, 1.7rem);
-    line-height: 1.35;
-    margin: 0.15rem 0 0.45rem;
-    overflow-wrap: break-word;
-    text-wrap: pretty;
+  .sidebar .search > .search-button {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+    border: 0;
   }
 
-  .page > #quartz-body article p,
-  .page > #quartz-body article li {
-    font-size: 1.075rem;
-    line-height: 1.85;
-    margin-top: 0;
-    margin-bottom: 1.05rem;
+  .sidebar .search > .search-button > p {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
-  .page > #quartz-body article img {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    margin: 1.25rem auto;
-    content-visibility: visible;
+  .sidebar .search > .search-button svg {
+    margin: 0;
   }
 
-  .page > #quartz-body pre,
-  .page > #quartz-body .table-container,
-  .page > #quartz-body .katex-display {
-    max-width: 100%;
-    overflow-x: auto;
-  }
-
-  // Explorer opens as a full-screen sheet without using 100vw (that overflows).
+  // Full-screen sheet. 100vw includes the scrollbar and overflows the page.
   #quartz-body .explorer .explorer-content {
     position: fixed;
     inset: 0;
@@ -169,82 +270,340 @@
     max-height: 100dvh;
     padding: 4.25rem 1.15rem 2rem;
     box-sizing: border-box;
-  }
-
-  #quartz-body .explorer-content a,
-  #quartz-body .explorer-content .folder-container div > a,
-  #quartz-body .explorer-content .folder-container div > button span {
-    line-height: 1.45;
-    overflow-wrap: anywhere;
-    white-space: normal;
-  }
-
-  // Right column follows the article. TOC stays one line until opened.
-  .page > #quartz-body > .sidebar.right {
-    display: contents;
-  }
-
-  #quartz-body .toc {
-    order: 1;
-    width: 100%;
-    max-width: 40rem;
-    margin: 0.35rem auto 0;
-    padding: 0 1.15rem;
-    box-sizing: border-box;
-    display: flex !important;
-  }
-
-  #quartz-body .toc:has(> .toc-header.collapsed) {
-    max-height: 2.75rem;
-    overflow: hidden;
-  }
-
-  #quartz-body .toc:has(> .toc-header:not(.collapsed)) {
-    max-height: min(50vh, 22rem);
-    overflow: auto;
-  }
-
-  #quartz-body .toc .toc-header {
-    min-height: 2.75rem;
-    width: 100%;
-  }
-
-  #quartz-body .backlinks {
-    order: 3;
-    width: 100%;
-    max-width: 40rem;
-    min-width: 0;
-    margin: 0.5rem auto;
-    padding: 0 1.15rem;
-    box-sizing: border-box;
-  }
-
-  .page > #quartz-body > footer {
-    order: 4;
-    width: 100%;
-    max-width: 40rem;
-    margin: 0 auto;
-    padding: 0 1.15rem 2rem;
-    box-sizing: border-box;
+    background: var(--light);
   }
 }
 
-// Graph View is disabled. An empty right rail would keep a 320px column.
-.sidebar.right:empty {
-  display: none;
+body .search > .search-container {
+  left: 0;
+  right: 0;
+  width: auto;
+  max-width: 100%;
 }
 
-@media all and ($desktop) {
-  .page > #quartz-body:has(> .sidebar.right:empty) {
-    grid-template-columns: #{$sidePanelWidth} minmax(0, 1fr);
-    grid-template-areas:
-      "grid-sidebar-left grid-header"
-      "grid-sidebar-left grid-center"
-      "grid-sidebar-left grid-footer";
+body .search > .search-container > .search-space > *:not(.ghost-text):not(.tag-suggestions) {
+  border-radius: 0;
+  box-shadow: 0 18px 44px rgba(42, 38, 31, 0.12);
+}
+
+body .search > .search-container > .search-space > input {
+  min-height: 48px;
+  font-family: var(--sans-stack);
+  font-size: 1.0625rem;
+  border-radius: 0;
+}
+
+body .search > .search-container > .search-space > input:focus,
+body .search > .search-container > .search-space > input:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+body .search .result-card {
+  line-height: 1.6;
+}
+
+body .search .result-card > h3 {
+  font-family: var(--serif-stack);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.sidebar .explorer-content ul li > a {
+  opacity: 1;
+  box-sizing: border-box;
+  width: 100%;
+  color: var(--darkgray);
+  font-family: var(--sans-stack);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.55;
+  padding: 0.55rem 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+h1.article-title {
+  margin: 0;
+  font-size: 1.85rem;
+  line-height: 1.35;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+h1.article-title::after {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 1px;
+  margin-top: 0.95rem;
+  background: var(--secondary);
+}
+
+@media all and (min-width: 800px) {
+  h1.article-title {
+    font-size: 2.35rem;
+  }
+}
+
+.page .breadcrumb-container {
+  margin: 0 0 1.15rem;
+  font-family: var(--sans-stack);
+  font-size: 0.86rem;
+  color: var(--gray);
+}
+
+.page .breadcrumb-element a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--gray);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.page .breadcrumb-element a:hover {
+  color: var(--secondary);
+}
+
+.page .content-meta {
+  margin-top: 0.85rem;
+  font-family: var(--sans-stack);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: var(--gray);
+}
+
+.center > article {
+  font-size: 1.125rem;
+  line-height: 1.95;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+
+.center > article p,
+.center > article li {
+  font-size: 1.125rem;
+  line-height: 1.95;
+}
+
+.center > article p {
+  margin: 0 0 1.35em;
+}
+
+.center > article ul,
+.center > article ol {
+  margin: 0 0 1.35em;
+  padding-left: 1.35rem;
+}
+
+.center > article li {
+  margin: 0.4em 0;
+}
+
+.center > article li::marker {
+  color: var(--secondary);
+}
+
+.center > article strong {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.center > article h2,
+.center > article h3,
+.center > article h4 {
+  margin-top: 2.1em;
+  margin-bottom: 0.7em;
+  line-height: 1.45;
+}
+
+.center > article blockquote {
+  margin: 1.6em 0;
+  padding: 0.1em 0 0.1em 1rem;
+  border-left: 1px solid var(--secondary);
+}
+
+.center > article a {
+  overflow-wrap: anywhere;
+}
+
+.center > article img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 2rem auto;
+  border-radius: 0;
+}
+
+.center > article pre,
+.center > article .table-container,
+.center > article table {
+  max-width: 100%;
+}
+
+.center > article pre {
+  border-radius: 0;
+}
+
+@media all and (max-width: 359px) {
+  h1.article-title {
+    font-size: 1.65rem;
   }
 
-  .page > #quartz-body:has(> .sidebar.right:empty) > .center {
-    max-width: 42rem;
-    min-width: 0;
+  .center > article,
+  .center > article p,
+  .center > article li {
+    font-size: 1.0625rem;
+    line-height: 1.95;
+  }
+}
+
+a.internal {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+}
+
+a.internal:hover {
+  color: var(--tertiary);
+}
+
+h2.page-title a,
+.recent-notes a.internal,
+.explorer-content a,
+.backlinks a,
+footer a {
+  text-decoration: none;
+}
+
+.center > hr {
+  height: 1px;
+  margin: 2.4rem 0 1.6rem;
+  border: 0;
+  background: var(--lightgray);
+}
+
+.recent-notes > h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--sans-stack);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--gray);
+}
+
+.page .recent-notes > ul.recent-ul {
+  margin: 0;
+  padding: 0;
+}
+
+.page .recent-notes > ul.recent-ul > li {
+  margin: 0;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--lightgray);
+}
+
+.page .recent-notes .desc h3 {
+  margin: 0;
+  font-family: var(--serif-stack);
+  font-size: 1.28rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.page .recent-notes .desc h3 a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.35rem 0;
+  color: var(--dark);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.page .recent-notes .desc h3 a:hover {
+  color: var(--secondary);
+}
+
+.page .recent-notes > ul.recent-ul > li .section > .meta {
+  margin: 0.15rem 0 0;
+  opacity: 1;
+  color: var(--gray);
+  font-family: var(--sans-stack);
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+}
+
+.sidebar .backlinks > h3,
+.sidebar .graph > h3,
+.sidebar button.toc-header h3 {
+  font-family: var(--sans-stack);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--gray);
+}
+
+.sidebar ul.toc-content.overflow > li > a {
+  opacity: 1;
+  color: var(--darkgray);
+  line-height: 1.55;
+  padding: 0.35rem 0;
+  display: inline-block;
+}
+
+.sidebar ul.toc-content.overflow > li > a.in-view {
+  opacity: 1;
+  color: var(--secondary);
+}
+
+.sidebar .backlinks > ul.overflow > li > a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.45rem 0;
+  color: var(--dark);
+  line-height: 1.5;
+}
+
+.popover > .popover-inner {
+  border-radius: 0;
+  box-shadow: 0 16px 40px rgba(42, 38, 31, 0.12);
+}
+
+#quartz-body > footer {
+  opacity: 1;
+  margin: 2.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--lightgray);
+  color: var(--gray);
+  font-family: var(--sans-stack);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+#quartz-body > footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--darkgray);
+  font-weight: 400;
+}
+
+#quartz-body > footer ul {
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
